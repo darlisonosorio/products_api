@@ -1,13 +1,10 @@
 package br.com.darlison.products_api.application.controller;
 
 import br.com.darlison.products_api.application.config.CommonResponseAnnontation;
-import br.com.darlison.products_api.domain.mapper.PurchaseInfoMapper;
 import br.com.darlison.products_api.domain.model.PurchaseInfo;
-import br.com.darlison.products_api.domain.model.Purchase;
 import br.com.darlison.products_api.domain.usecase.GetPurchasesUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.Comparator;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

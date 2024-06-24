@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class GetClientsUseCase {
 
-  private ClientApiClient clientApiClient;
+  private final ClientApiClient clientApiClient;
 
   GetClientsUseCase(final ClientApiClient clientApiClient) {
     this.clientApiClient = clientApiClient;

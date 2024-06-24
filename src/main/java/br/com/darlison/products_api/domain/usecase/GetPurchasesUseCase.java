@@ -1,5 +1,6 @@
 package br.com.darlison.products_api.domain.usecase;
 
+import br.com.darlison.products_api.domain.dto.TopClientDto;
 import br.com.darlison.products_api.domain.mapper.PurchaseInfoMapper;
 import br.com.darlison.products_api.domain.model.Client;
 import br.com.darlison.products_api.domain.model.Product;
@@ -51,11 +52,36 @@ public class GetPurchasesUseCase {
         .stream()
         .flatMap(
             it -> it.getPurchaseList().stream()
-                    .peek(purc -> updateFields(purc, it, products))
+                .peek(purc -> updateFields(purc, it, products))
         )
         .filter(it -> Objects.equals(it.getProduct().getYearSell(), year))
         .map(PurchaseInfoMapper::map)
         .max(Comparator.comparing(PurchaseInfo::getTotalPrice))
         .orElse(null);
+  }
+
+  public List<Client> getTopClients() {
+    List<Product> products = getProductsUseCase.getProducts();
+    List<Client> clients = getClientsUseCase.getClients();
+
+    return clients
+        .stream()
+        .map(it -> TopClientDto
+            .builder()
+            .client(it)
+            .total(it.getPurchaseList().size())
+            .totalAmount(it.getPurchaseList()
+                .stream()
+                .map(purc -> {
+                  updateFields(purc, it, products);
+                  return purc.getQuantity() * purc.getProduct().getPrice();
+                })
+                .reduce(0.0, Double::sum))
+            .build())
+        .sorted(Comparator.comparing(TopClientDto::getTotalAmount).reversed()
+            .thenComparing(Comparator.comparing(TopClientDto::getTotal).reversed()))
+        .map(TopClientDto::getClient)
+        .limit(3)
+        .toList();
   }
 }
