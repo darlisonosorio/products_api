@@ -1,4 +1,4 @@
-package br.com.darlison.products_api.application;
+package br.com.darlison.products_api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
