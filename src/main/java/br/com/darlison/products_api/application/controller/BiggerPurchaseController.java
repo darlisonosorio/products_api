@@ -1,38 +1,33 @@
 package br.com.darlison.products_api.application.controller;
 
 import br.com.darlison.products_api.application.config.CommonResponseAnnontation;
-import br.com.darlison.products_api.domain.mapper.PurchaseInfoMapper;
 import br.com.darlison.products_api.domain.model.PurchaseInfo;
-import br.com.darlison.products_api.domain.model.Purchase;
 import br.com.darlison.products_api.domain.usecase.GetPurchasesUseCase;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.Comparator;
-import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Endpoint de Compras")
+@RequestMapping("/maior-compra")
 @RestController
-@RequestMapping("/compras")
-public class PurchaseController {
+public class BiggerPurchaseController {
 
-  private final GetPurchasesUseCase getPurchasesUseCase;
+  private GetPurchasesUseCase getPurchasesUseCase;
 
-  public PurchaseController(GetPurchasesUseCase getPurchasesUseCase) {
+  BiggerPurchaseController(GetPurchasesUseCase getPurchasesUseCase) {
     this.getPurchasesUseCase = getPurchasesUseCase;
   }
 
-  @GetMapping
+  @GetMapping("/{ano}")
   @Operation(
       method = "GET",
-      description = "Requisição GET para obter a lista de Compras",
-      summary = "GET list Compras"
+      description = "Requisição GET para obter a maior compra pelo Ano",
+      summary = "GET maior Compra"
   )
   @CommonResponseAnnontation
-  public List<PurchaseInfo> list() {
-    return getPurchasesUseCase.list();
+  public PurchaseInfo getBiggerPurchase(@PathVariable("ano") Integer year) {
+    return getPurchasesUseCase.getBiggerPurchase(year);
   }
 
 }

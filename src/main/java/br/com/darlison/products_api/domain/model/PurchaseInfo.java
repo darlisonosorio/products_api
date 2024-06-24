@@ -1,4 +1,4 @@
-package br.com.darlison.products_api.application.output;
+package br.com.darlison.products_api.domain.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PurchaseResponse {
+public class PurchaseInfo {
 
   private String clientName;
   private String cpf;

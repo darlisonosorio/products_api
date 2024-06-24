@@ -1,8 +1,11 @@
 package br.com.darlison.products_api.domain.usecase;
 
+import br.com.darlison.products_api.domain.mapper.PurchaseInfoMapper;
 import br.com.darlison.products_api.domain.model.Client;
 import br.com.darlison.products_api.domain.model.Product;
 import br.com.darlison.products_api.domain.model.Purchase;
+import br.com.darlison.products_api.domain.model.PurchaseInfo;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.stereotype.Component;
@@ -19,7 +22,7 @@ public class GetPurchasesUseCase {
     this.getProductsUseCase = getProductsUseCase;
   }
 
-  public List<Purchase> list() {
+  public List<PurchaseInfo> list() {
     List<Product> products = getProductsUseCase.getProducts();
     List<Client> clients = getClientsUseCase.getClients();
 
@@ -27,6 +30,8 @@ public class GetPurchasesUseCase {
         .stream()
         .flatMap(
             it -> it.getPurchaseList().stream().peek(purc -> updateFields(purc, it, products)))
+        .map(PurchaseInfoMapper::map)
+        .sorted(Comparator.comparing(PurchaseInfo::getTotalPrice))
         .toList();
   }
 
@@ -38,4 +43,19 @@ public class GetPurchasesUseCase {
             .findFirst().orElse(null));
   }
 
+  public PurchaseInfo getBiggerPurchase(Integer year) {
+    List<Product> products = getProductsUseCase.getProducts();
+    List<Client> clients = getClientsUseCase.getClients();
+
+    return clients
+        .stream()
+        .flatMap(
+            it -> it.getPurchaseList().stream()
+                    .peek(purc -> updateFields(purc, it, products))
+        )
+        .filter(it -> Objects.equals(it.getProduct().getYearSell(), year))
+        .map(PurchaseInfoMapper::map)
+        .max(Comparator.comparing(PurchaseInfo::getTotalPrice))
+        .orElse(null);
+  }
 }
