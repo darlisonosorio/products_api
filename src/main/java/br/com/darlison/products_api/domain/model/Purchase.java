@@ -1,6 +1,8 @@
 package br.com.darlison.products_api.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.List;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,4 +25,11 @@ public class Purchase {
   @JsonIgnore
   private Product product;
 
+  public void updateFields(Client client, List<Product> products) {
+    this.client = client;
+    this.product = products.stream()
+            .filter(prod -> Objects.equals(prod.getCode().toString(), this.code))
+            .findFirst().orElse(null);
+
+  }
 }

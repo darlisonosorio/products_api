@@ -4,7 +4,6 @@ import br.com.darlison.products_api.domain.dto.TopClientDto;
 import br.com.darlison.products_api.domain.mapper.PurchaseInfoMapper;
 import br.com.darlison.products_api.domain.model.Client;
 import br.com.darlison.products_api.domain.model.Product;
-import br.com.darlison.products_api.domain.model.Purchase;
 import br.com.darlison.products_api.domain.model.PurchaseInfo;
 import java.util.Comparator;
 import java.util.List;
@@ -30,18 +29,10 @@ public class GetPurchasesUseCase {
     return clients
         .stream()
         .flatMap(
-            it -> it.getPurchaseList().stream().peek(purc -> updateFields(purc, it, products)))
+            it -> it.getPurchaseList().stream().peek(purc -> purc.updateFields(it, products)))
         .map(PurchaseInfoMapper::map)
         .sorted(Comparator.comparing(PurchaseInfo::getTotalPrice))
         .toList();
-  }
-
-  private void updateFields(Purchase purchase, Client client, List<Product> products) {
-    purchase.setClient(client);
-    purchase.setProduct(
-        products.stream()
-            .filter(prod -> Objects.equals(prod.getCode().toString(), purchase.getCode()))
-            .findFirst().orElse(null));
   }
 
   public PurchaseInfo getBiggerPurchase(Integer year) {
@@ -52,7 +43,7 @@ public class GetPurchasesUseCase {
         .stream()
         .flatMap(
             it -> it.getPurchaseList().stream()
-                .peek(purc -> updateFields(purc, it, products))
+                .peek(purc -> purc.updateFields(it, products))
         )
         .filter(it -> Objects.equals(it.getProduct().getYearSell(), year))
         .map(PurchaseInfoMapper::map)
@@ -73,7 +64,7 @@ public class GetPurchasesUseCase {
             .totalAmount(it.getPurchaseList()
                 .stream()
                 .map(purc -> {
-                  updateFields(purc, it, products);
+                  purc.updateFields(it, products);
                   return purc.getQuantity() * purc.getProduct().getPrice();
                 })
                 .reduce(0.0, Double::sum))
